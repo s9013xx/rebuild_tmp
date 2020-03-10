@@ -86,7 +86,6 @@ def backup_file(file_path):
 def write_file(data, path, file):
     file_path = os.path.join(path, file)
     warn_tag = colored('[Warn] ', 'red', attrs=['blink']) 
-    print('eeeeeee:', path)
     if not os.path.isdir(path):
         os.makedirs(path)
     else:
@@ -95,3 +94,7 @@ def write_file(data, path, file):
 
     print(warn_tag + 'Auto create file: ' + file_path)
     data.to_csv(file_path, index=False)
+
+def append_file(data, path, file):
+    file_path = os.path.join(path, file)
+    data.to_csv(file_path, index=False, mode='a', header=False)

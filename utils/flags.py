@@ -31,8 +31,8 @@ def read_collect_data_flags():
     # parser.add_argument('--backup_path', type=str, default=os.path.join(os.getcwd(), 'backup'), help='backup path')
     
     # Profile Parameters
-    parser.add_argument('--output_timeline_path', '-otp', type=str, default=os.path.join(os.getcwd(), 'timeline'), help='timeline path')
-    
+    parser.add_argument('--output_timeline_profile_path', '-opfp', type=str, default=os.path.join(os.getcwd(), 'timeline_profile'), help='timeline path')
+
 
     args = parser.parse_args()
     return args

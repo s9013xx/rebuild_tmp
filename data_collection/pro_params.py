@@ -10,28 +10,28 @@ from termcolor import colored
 from tensorflow.python.client import timeline
 from ..utils.utils import get_support_devices, get_colnames, get_hash_colnames, get_time_colnames
 from ..utils.parameters import ParamsConv, ParamsDense, ParamsPooling
+from ..utils.utils import backup_file
 
 class Pro_Params(object):
     """ "Store Data infos """
-    def __init__(self, predition_layertype, input_params_file_path, output_exe_path,
-        output_exe_file, iter_warmup, iter_benchmark):
+    def __init__(self, predition_layertype, device, input_params_file_path, output_pro_path, iter_warmup):
 
         self.predition_layertype = predition_layertype
+        self.device = device
         self.input_params_file_path = input_params_file_path
-        self.output_exe_path = output_exe_path
-        self.output_exe_file = output_exe_file
+        self.output_pro_path = output_pro_path
         self.iter_warmup = iter_warmup
-        self.iter_benchmark = iter_benchmark
-        self.output_exe_file_path = os.path.join(output_exe_path, output_exe_file)
+        self.timeline_path = os.path.join(output_pro_path, device, predition_layertype)
 
-        self.profile
-        self.timeline_path
+        # create or backup dir
+        if not os.path.isdir(self.timeline_path):
+            os.makedirs(self.timeline_path)
+        else:
+            backup_file(self.timeline_path)
+            os.makedirs(self.timeline_path)
 
     def execute(self):
-        print(self.input_params_file_path)
         df_  = pd.read_csv(self.input_params_file_path)
-        print(df_)
-
         colnames = get_colnames(self.predition_layertype)
     
         if self.predition_layertype == 'convolution':
@@ -48,7 +48,6 @@ class Pro_Params(object):
         params.set_colnames(colnames)
         params.auto_generate_elements()
         params.generate_hashkey()
-        print(params.data)
 
         run_metadata = tf.RunMetadata() ### metadata tags is here !!!
         ### Generate an Run each opearation in dataframe
@@ -73,40 +72,16 @@ class Pro_Params(object):
                 continue
             # Do Benchmark
             hash_colname = get_hash_colnames()[0]
-            if self.profile:
-                profile_json_name = str(params.data.loc[index, hash_colname]) + '.json'
-                filename = os.path.join(self.timeline_path, profile_json_name)
-                sess.run(op, options=tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE),
-                    run_metadata=run_metadata)
-                tl = timeline.Timeline(run_metadata.step_stats)
-                ctf = tl.generate_chrome_trace_format()
-                with open(filename, 'w') as f:
-                    f.write(ctf) 
-                time.sleep(0.005)
-            else:
-                time_list = []
-                for _ in range(self.iter_benchmark):
-                    start_time = time.time()
-                    sess.run(op)
-                    time_list.append(((time.time()-start_time) * 1000))
-                
-                time_list = np.array(time_list)
-                time_data_ele = {
-                    'hashkey':        str(params.data.loc[index, hash_colname]),
-                    'time_max':       np.amax(time_list),
-                    'time_min':       np.amin(time_list),
-                    'time_median':    np.median(time_list),
-                    'time_mean':      np.mean(time_list), 
-                    'time_trim_mean': stats.trim_mean(time_list, 0.1),
-                }
-                 
-                df_ele = pd.DataFrame(data = time_data_ele, index=[0])
-                print("time_mean: {} ms".format(time_data_ele['time_mean']))
-                #return
-                if index==0: 
-                    df_ele.to_csv(flags.output_filename, index=False)
-                else:
-                    df_ele.to_csv(flags.output_filename, index=False, mode='a', header=False)
+
+            profile_json_name = str(params.data.loc[index, hash_colname]) + '.json'
+            filename = os.path.join(self.timeline_path, profile_json_name)
+            sess.run(op, options=tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE),
+                run_metadata=run_metadata)
+            tl = timeline.Timeline(run_metadata.step_stats)
+            ctf = tl.generate_chrome_trace_format()
+            with open(filename, 'w') as f:
+                f.write(ctf) 
+            time.sleep(0.005)
 
 
 

@@ -32,6 +32,12 @@ def main():
 
     if flags.profile_params:
         print('profile_params')
+        if not flags.input_params_file_path:
+            flags.input_params_file_path = os.path.join(flags.output_params_path, flags.output_params_file)
+        check_config(flags)
+        profile_params = Pro_Params(flags.predition_layertype, flags.device, flags.input_params_file_path,
+            flags.output_timeline_profile_path, flags.iter_warmup)
+        profile_params.execute()
 
 
 if __name__ == '__main__':
