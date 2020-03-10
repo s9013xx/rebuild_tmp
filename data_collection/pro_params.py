@@ -11,7 +11,7 @@ from tensorflow.python.client import timeline
 from ..utils.utils import get_support_devices, get_colnames, get_hash_colnames, get_time_colnames
 from ..utils.parameters import ParamsConv, ParamsDense, ParamsPooling
 
-class Exe_Params(object):
+class Pro_Params(object):
     """ "Store Data infos """
     def __init__(self, predition_layertype, input_params_file_path, output_exe_path,
         output_exe_file, iter_warmup, iter_benchmark):

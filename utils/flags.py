@@ -13,13 +13,13 @@ def read_collect_data_flags():
     parser.add_argument('--exe_params', '-ep', action="store_true", default=False, help='execution parameters on specific device')
     parser.add_argument('--profile_params', '-pp', action="store_true", default=False, help='Use tensorflow profiler')
 
-    #Generate Parameters
+    # Generate Parameters
     parser.add_argument('--num', '-num', type=int, default=110000, help='Number of results to compute')
     parser.add_argument('--shuffle', '-shuffle', type=int, default=1, help='shuffle the data')
     parser.add_argument('--output_params_path', '-opp', type=str, default=os.path.join(os.getcwd(),'golden_struct_values'), help='The path of the output csv filename')
     parser.add_argument('--output_params_file', '-opf', type=str, default='', help='The output csv file name')
     
-    #Execution Parameters
+    # Execution Parameters
     parser.add_argument('--input_params_file_path', '-ipfp', type=str, default='', help='The input params csv file path')
     parser.add_argument('--output_exe_path', '-op', type=str, default=os.path.join(os.getcwd(), 'golden_time_values'), help='The path of the output csv filename')
     parser.add_argument('--output_exe_file', '-of', type=str, default='', help='The output csv filename')
@@ -30,8 +30,9 @@ def read_collect_data_flags():
     parser.add_argument('--cpu', '-cpu', action="store_true", default=False, help='Force to use CPU to computate')
     # parser.add_argument('--backup_path', type=str, default=os.path.join(os.getcwd(), 'backup'), help='backup path')
     
-    #Timeline Profile Parameters
+    # Profile Parameters
     parser.add_argument('--output_timeline_path', '-otp', type=str, default=os.path.join(os.getcwd(), 'timeline'), help='timeline path')
+    
 
     args = parser.parse_args()
     return args

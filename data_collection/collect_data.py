@@ -5,6 +5,7 @@ from ..utils.utils import write_file
 from ..utils.utils import check_config
 from .gen_params import Gen_Params
 from .exe_params import Exe_Params
+from .pro_params import Pro_Params
 # from parameters import ParamsConv, ParamsDense, ParamsPooling
 
 def main():

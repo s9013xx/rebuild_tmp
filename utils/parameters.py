@@ -305,6 +305,13 @@ class ParamsPooling(ParamsBase):
             strides=(layer['strides'].astype(int), layer['strides'].astype(int)), 
             padding=('SAME' if layer['padding'].astype(int)==1 else 'VALID'), 
             name = self.typename)
+        # conv=tf.layers.conv2d(
+        #       inputs=x,
+        #       filters=32,
+        #       kernel_size=[5, 5],
+        #       padding="same",
+        #       activation=tf.nn.relu)
+        # op=tf.layers.max_pooling2d(inputs=op, pool_size=[2, 2], strides=2)
         return op
 
     @property
