@@ -37,6 +37,20 @@ def read_collect_data_flags():
     args = parser.parse_args()
     return args
 
+def read_preprocess_data_flags():
+    parser = argparse.ArgumentParser('Preprocess Data Paremeters Parser')
+
+    # General Parameters
+    parser.add_argument('--predition_layertype', '-pl', default='convolution', type=str, choices=get_support_layers(), help='Layer types of neural networks')
+    parser.add_argument('--device', '-d', type=str, default='1080ti', help='Device name as appearing in logfile')
+    parser.add_argument('--parse_timeline', '-pt', action="store_true", default=False, help='parse timeline files')
+    
+    # Parse Time
+    parser.add_argument('--dafault_timeline_root_path', 'dtrp', type=str, default=os.path.join(os.getcwd(), 'timeline'), help='timeline path')
+    parser.add_argument('--input_timeline_profile_path', 'itpp', type=str, default='', help='timeline path')
+
+    return args
+
 
 # def read_collect_data_flags():
 #     parser = argparse.ArgumentParser('Collect Time from Input Data(csv)')
