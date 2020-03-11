@@ -33,7 +33,6 @@ def read_collect_data_flags():
     # Profile Parameters
     parser.add_argument('--output_timeline_profile_path', '-opfp', type=str, default=os.path.join(os.getcwd(), 'timeline_profile'), help='timeline path')
 
-
     args = parser.parse_args()
     return args
 
@@ -46,8 +45,20 @@ def read_preprocess_data_flags():
     parser.add_argument('--parse_timeline', '-pt', action="store_true", default=False, help='parse timeline files')
     
     # Parse Time
-    parser.add_argument('--dafault_timeline_root_path', 'dtrp', type=str, default=os.path.join(os.getcwd(), 'timeline'), help='timeline path')
-    parser.add_argument('--input_timeline_profile_path', 'itpp', type=str, default='', help='timeline path')
+    parser.add_argument('--dafault_timeline_root_path', '-dtrp', type=str, default=os.path.join(os.getcwd(), 'timeline_profile'), help='timeline path')
+    parser.add_argument('--input_timeline_profile_path', '-itpp', type=str, default='', help='timeline path')
+    parser.add_argument('--output_parser_path', '-opp', type=str, default=os.path.join(os.getcwd(),'golden_timeline_values'), help='The path of the output csv filename')
+    parser.add_argument('--output_parser_file', '-opf', type=str, default='', help='The output csv file name')
+    # Benchmarks parameters
+    parser.add_argument('--all_compute', type=str, default='(GPU:0)*(all Compute)', help='search tag - all_compute')
+    parser.add_argument('--replica_gpu', type=str, default='(replica:0)*(GPU:0)+ (Compute)+', help='search tag - replica_gpu')
+    parser.add_argument('--replica_cpu', type=str, default='(replica:0)*(CPU:0)+ (Compute)+', help='search tag - replica_cpu')
+    parser.add_argument('--memcpyD2H', type=str, default='memcpy', help='search tag - memcpy')
+    parser.add_argument('--transpose_in', type=str, default='TransposeNHWCToNCHW', help='search tag - transpose_in')
+    parser.add_argument('--transpose_out', type=str, default='TransposeNCHWToNHWC', help='search tag - transpose_out')
+    parser.add_argument('--retval', type=str, default='retval', help='search tag - retval')
+
+    args = parser.parse_args()
 
     return args
 

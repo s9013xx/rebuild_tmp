@@ -1,8 +1,8 @@
 import os
 import sys
-from ..utils.flags import read_collect_data_flags
-from ..utils.utils import write_file
-from ..utils.utils import check_config
+from ..utils.flags import read_preprocess_data_flags
+# from ..utils.utils import write_file
+# from ..utils.utils import check_config
 from .parse_timeline import Parse_Timeline
 
 def main():
@@ -12,7 +12,12 @@ def main():
         print('parse_timeline')
         if not flags.input_timeline_profile_path:
             flags.input_timeline_profile_path = os.path.join(flags.dafault_timeline_root_path, flags.device, flags.predition_layertype)
-        parse_timeline = Parse_Timeline(flags.predition_layertype, flags.device, flags.input_timeline_profile_path)
+        if not flags.output_parser_file:
+            flags.output_parser_file = flags.predition_layertype + '_' + flags.device + '.csv'
+        parse_timeline = Parse_Timeline(flags.predition_layertype, flags.device, flags.input_timeline_profile_path,
+            flags.output_parser_path, flags.output_parser_file, flags.replica_cpu, flags.replica_gpu,
+            flags.all_compute, flags.transpose_in, flags.transpose_out, flags.memcpyD2H, flags.retval)
+        parse_timeline.execute()
 
     # if flags.gen_params:
     #     print('gen_random_params')

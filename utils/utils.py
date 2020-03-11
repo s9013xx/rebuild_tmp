@@ -84,6 +84,8 @@ def backup_file(file_path):
     os.rename(file_path, os.path.join(path, bk_filename))
 
 def write_file(data, path, file):
+    print('path', path)
+    print('file', file)
     file_path = os.path.join(path, file)
     warn_tag = colored('[Warn] ', 'red', attrs=['blink']) 
     if not os.path.isdir(path):

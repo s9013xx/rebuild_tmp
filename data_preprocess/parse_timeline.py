@@ -1,4 +1,7 @@
+import re
 import os
+import sys
+import json
 import time
 import random
 import numpy as np
@@ -10,8 +13,8 @@ from termcolor import colored
 # from tensorflow.python.client import timeline
 # from ..utils.utils import get_support_devices, get_colnames, get_hash_colnames, get_time_colnames
 # from ..utils.parameters import ParamsConv, ParamsDense, ParamsPooling
-# from ..utils.utils import write_file
-# from ..utils.utils import append_file
+from ..utils.utils import write_file
+from ..utils.utils import append_file
 
 class Recorders(object):
     """ "Store Data infos """
@@ -343,37 +346,44 @@ class EasyTag(object):
 
 class Parse_Timeline(object):
     """ "Store Data infos """
-    def __init__(self, predition_layertype, device, input_timeline_profile_path, output_exe_path,
-        output_exe_file, iter_warmup, iter_benchmark):
+    def __init__(self, predition_layertype, device, input_timeline_profile_path, output_parser_path,
+        output_parser_file, replica_cpu, replica_gpu, all_compute, transpose_in, transpose_out,
+        memcpyD2H, retval):
 
         self.predition_layertype = predition_layertype
         self.device = device
         self.input_timeline_profile_path = input_timeline_profile_path
-        self.output_exe_path = output_exe_path
-        self.output_exe_file = output_exe_file
-        self.iter_warmup = iter_warmup
-        self.iter_benchmark = iter_benchmark
+        self.output_parser_path = output_parser_path
+        self.output_parser_file = output_parser_file
+
+        self.replica_cpu = replica_cpu
+        self.replica_gpu = replica_gpu
+        self.all_compute = all_compute
+        self.transpose_in = transpose_in
+        self.transpose_out = transpose_out
+        self.memcpyD2H = memcpyD2H
+        self.retval = retval
 
     def execute(self):
         # flags = read_collect_timeline_data_flags()
-        warn_tag = colored('[Warn] ', 'red', attrs=['blink']) 
-        success_tag = colored('[Success] ', 'green')
-        if not os.path.isdir(flags.output_path):
-            os.makedirs(flags.output_path)
+        # warn_tag = colored('[Warn] ', 'red', attrs=['blink']) 
+        # success_tag = colored('[Success] ', 'green')
+        # if not os.path.isdir(flags.output_path):
+        #     os.makedirs(flags.output_path)
 
-        if not flags.output_filename:
-            tmp_str = flags.predition_layertype + '_' + flags.device + '.csv'
-            flags.output_filename = os.path.join(flags.output_path, tmp_str)
-            print(warn_tag + 'Auto create file: ' + flags.output_filename)
+        # if not flags.output_filename:
+        #     tmp_str = flags.predition_layertype + '_' + flags.device + '.csv'
+        #     flags.output_filename = os.path.join(flags.output_path, tmp_str)
+        #     print(warn_tag + 'Auto create file: ' + flags.output_filename)
 
-        all_files = os.listdir(flags.input_timeline_profile_path)
+        all_files = os.listdir(self.input_timeline_profile_path)
         print(all_files)
         index = 0
         for filename in all_files:
-            full_filename = os.path.join(flags.input_timeline_profile_path, filename)
-            recorders = Recorders(full_filename, None, flags.replica_cpu,
-                flags.replica_gpu, flags.all_compute, flags.transpose_in,
-                flags.transpose_out, flags.memcpyD2H, flags.retval)
+            full_filename = os.path.join(self.input_timeline_profile_path, filename)
+            recorders = Recorders(full_filename, None, self.replica_cpu,
+                self.replica_gpu, self.all_compute, self.transpose_in,
+                self.transpose_out, self.memcpyD2H, self.retval)
             date_ele = {
                 'hashkey':            os.path.splitext(filename)[0],
                 'preprocess_time':    recorders.preprocess_time,
@@ -391,10 +401,13 @@ class Parse_Timeline(object):
                 date_ele[key] = value / 1000
             df_ele = pd.DataFrame(data = date_ele, index=[0])
             if index==0:
-                print('1.', flags.output_filename)
-                df_ele.to_csv(flags.output_filename, index=False)
+                # print('1.', flags.output_filename)
+                # df_ele.to_csv(flags.output_filename, index=False)
+                write_file(df_ele, self.output_parser_path, self.output_parser_file)
                 index = 1
             else:
-                print('2.', flags.output_filename)
-                df_ele.to_csv(flags.output_filename, index=False, mode='a', header=False)
+                # print('2.', flags.output_filename)
+                # df_ele.to_csv(flags.output_filename, index=False, mode='a', header=False)
+                append_file(df_ele, self.output_parser_path, self.output_parser_file)
+        success_tag = colored('[Success] ', 'green')
         print(success_tag + 'Timeline collection is end!!')
